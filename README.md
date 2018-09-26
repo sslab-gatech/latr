@@ -19,6 +19,7 @@ Running the micro-benchmark:
       - use run.py in the scripts directory
         (./microbenchmark/mmap_micro/src/scripts/) to run the micro benchmark.
 
+```
 @inproceedings{LATR:ASPLOS18,
  author = {Kumar, Mohan Kumar and Maass, Steffen and Kashyap, Sanidhya and Vesel\'{y}, J\'{a}n and Yan, Zi and Kim, Taesoo and Bhattacharjee, Abhishek and Krishna, Tushar},
  title = {{LATR: Lazy Translation Coherence}},
@@ -29,3 +30,4 @@ Running the micro-benchmark:
  address = {Williamsburg, VA, USA},
  pages = {651--664},
 }
+```
