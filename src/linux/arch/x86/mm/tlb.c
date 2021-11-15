@@ -1,5 +1,8 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 #include <linux/init.h>
+/* latr */
 #include <linux/kthread.h>
+/*******/
 #include <linux/mm.h>
 #include <linux/spinlock.h>
 #include <linux/smp.h>
@@ -28,6 +31,7 @@
  *	Implement flush IPI by CALL_FUNCTION_VECTOR, Alex Shi
  */
 
+/* latr */
 DEFINE_PER_CPU(struct tlbinfo, tlbinfo);
 
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
@@ -35,9 +39,11 @@ shootdown_entries_t __percpu *lazy_tlb_entries;
 static struct cpumask cpu_none = {CPU_BITS_NONE};
 #define TLB_SHOOTDOWN_MAX 2
 #endif
+/*******/
 
 #ifdef CONFIG_SMP
 
+/* latr */
 #ifndef CONFIG_LAZY_TLB_SHOOTDOWN
 struct flush_tlb_info {
 	struct mm_struct *flush_mm;
@@ -45,6 +51,7 @@ struct flush_tlb_info {
 	unsigned long flush_end;
 };
 #endif
+/*******/
 
 /*
  * We cannot call mmdrop() because we are in interrupt context,
@@ -169,7 +176,6 @@ void switch_mm_irqs_off(struct mm_struct *prev, struct mm_struct *next,
 		BUG_ON(this_cpu_read(cpu_tlbstate.active_mm) != next);
 
 		if (!cpumask_test_cpu(cpu, mm_cpumask(next))) {
-                        //u64 time = rdtsc_ordered();
 			/*
 			 * On established mms, the mm_cpumask is only changed
 			 * from irq context, from ptep_clear_flush() while in
@@ -268,6 +274,7 @@ static void flush_tlb_func(void *info)
 
 }
 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 
 void native_flush_tlb_fallback(const struct cpumask *cpumask,
@@ -636,18 +643,21 @@ int native_flush_save_state(struct flush_tlb_info *info,
 EXPORT_SYMBOL_GPL(native_flush_save_state);
 
 #endif
+/*******/
 
 void native_flush_tlb_others(const struct cpumask *cpumask,
 				 struct mm_struct *mm, unsigned long start,
 				 unsigned long end)
 {
 	struct flush_tlb_info info;
+/* latr */
         u64 time;
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	int ret=0;
 #endif
 
         time = rdtsc();
+/*******/
 	if (end == 0)
 		end = start + PAGE_SIZE;
 	info.flush_mm = mm;
@@ -655,7 +665,9 @@ void native_flush_tlb_others(const struct cpumask *cpumask,
 	info.flush_end = end;
 
 	count_vm_tlb_event(NR_TLB_REMOTE_FLUSH);
+/* latr */
         this_cpu_inc(tlbinfo.remote_tlbs.num_tlbs);
+/*******/
 	if (end == TLB_FLUSH_ALL)
 		trace_tlb_flush(TLB_REMOTE_SEND_IPI, TLB_FLUSH_ALL);
 	else
@@ -673,6 +685,7 @@ void native_flush_tlb_others(const struct cpumask *cpumask,
 		return;
 	}
 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	// Flush the local TLB and save state only for unmap operation
 	if ((mm) && (atomic_read(&mm->munmap_inprogress))) {
@@ -696,6 +709,7 @@ void native_flush_tlb_others(const struct cpumask *cpumask,
                              rdtsc_ordered() - time);
     this_cpu_inc(tlbinfo.remote_tlbs.count_ipi);
 #endif
+/*******/
 }
 
 void flush_tlb_current_task(void)
@@ -731,12 +745,16 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
 				unsigned long end, unsigned long vmflag)
 {
 	unsigned long addr;
+/* latr */
 	u64 time;
+/*******/
 	/* do a global flush by default */
 	unsigned long base_pages_to_flush = TLB_FLUSH_ALL;
 
 	preempt_disable();
+/* latr */
 	time = rdtsc();
+/*******/
 	if (current->active_mm != mm) {
 		/* Synchronize with switch_mm. */
 		smp_mb();
@@ -768,14 +786,15 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
 		/* flush range by one by one 'invlpg' */
 		for (addr = start; addr < end;	addr += PAGE_SIZE) {
 			count_vm_tlb_event(NR_TLB_LOCAL_FLUSH_ONE);
-                        //this_cpu_inc(tlbinfo.num_single_tlbs);
 			__flush_tlb_single(addr);
 		}
 	}
 	trace_tlb_flush(TLB_LOCAL_MM_SHOOTDOWN, base_pages_to_flush);
+/* latr */
 	this_cpu_inc(tlbinfo.inv_tlbs.num_tlbs);
 	update_tlbinfo_stats(&this_cpu_ptr(&tlbinfo)->inv_tlbs,
 			rdtsc_ordered() - time);
+/*******/
 out:
 	if (base_pages_to_flush == TLB_FLUSH_ALL) {
 		start = 0UL;
@@ -792,7 +811,6 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long start)
 
 	preempt_disable();
 
-	/* u64 time = rdtsc(); */
 	if (current->active_mm == mm) {
 		if (current->mm) {
 			/*
@@ -807,9 +825,6 @@ void flush_tlb_page(struct vm_area_struct *vma, unsigned long start)
 			smp_mb();
 		}
 	}
-	/* this_cpu_inc(tlbinfo.inv_tlbs.num_tlbs); */
-        /* update_tlbinfo_stats(&this_cpu_ptr(&tlbinfo)->inv_tlbs, */
-	/* 		rdtsc_ordered() - time); */
 
 	if (cpumask_any_but(mm_cpumask(mm), smp_processor_id()) < nr_cpu_ids)
 		flush_tlb_others(mm_cpumask(mm), mm, start, 0UL);
@@ -896,6 +911,7 @@ static const struct file_operations fops_tlbflush = {
 
 static int __init create_tlb_single_page_flush_ceiling(void)
 {
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	int align = 32;
 	struct task_struct *tlb_task;
@@ -940,6 +956,7 @@ static int __init create_tlb_single_page_flush_ceiling(void)
 #endif
 
 	// create the per-core TLB flush scratchpad memory needed
+/*******/
 
 	debugfs_create_file("tlb_single_page_flush_ceiling", S_IRUSR | S_IWUSR,
 			    arch_debugfs_dir, NULL, &fops_tlbflush);

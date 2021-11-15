@@ -1,5 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
- *
  * mm/mmap.c
  *
  * Written by obz.
@@ -68,10 +68,12 @@ const int mmap_rnd_compat_bits_max = CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX;
 int mmap_rnd_compat_bits __read_mostly = CONFIG_ARCH_MMAP_RND_COMPAT_BITS;
 #endif
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 DEFINE_SPINLOCK(lazy_mm_lock);
 LIST_HEAD(lazy_mm_list);
 #endif
+/********/
 
 static bool ignore_rlimit_data;
 core_param(ignore_rlimit_data, ignore_rlimit_data, bool, 0644);
@@ -1655,9 +1657,11 @@ unsigned long mmap_region(struct file *file, unsigned long addr,
 	vma->vm_page_prot = vm_get_page_prot(vm_flags);
 	vma->vm_pgoff = pgoff;
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	atomic_set(&vma->is_marked_lazy, 0);
 #endif
+/********/
 
 	if (file) {
 		if (vm_flags & VM_DENYWRITE) {
@@ -2525,9 +2529,11 @@ static int __split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 	*new = *vma;
 
 	INIT_LIST_HEAD(&new->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	atomic_set(&new->is_marked_lazy, 0);
 #endif
+/********/
 
 	if (new_below)
 		new->vm_end = addr;
@@ -2586,6 +2592,7 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 	return __split_vma(mm, vma, addr, new_below);
 }
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 
 void lazy_free_pages(struct mm_struct *mm,
@@ -2673,6 +2680,7 @@ void add_vmas_to_lazy_list(struct mm_struct *mm,
 }
 
 #endif
+/********/
 
 /* Munmap is split into 2 main parts -- this part which finds
  * what needs doing, and the areas themselves, which do the
@@ -2750,6 +2758,7 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 		}
 	}
 
+/* latr */
 #ifndef CONFIG_LAZY_MEM_FREE
 	/*
 	 * Remove the vma's, and unmap the actual pages
@@ -2789,6 +2798,7 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 		remove_vma_list(mm, vma);
 	}
 #endif
+/********/
 
 	return 0;
 }
@@ -2815,13 +2825,17 @@ SYSCALL_DEFINE2(munmap, unsigned long, addr, size_t, len)
 	profile_munmap(addr);
 	if (down_write_killable(&mm->mmap_sem))
 		return -EINTR;
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	atomic_set(&mm->munmap_inprogress, 1);
 #endif
+/********/
 	ret = do_munmap(mm, addr, len);
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	atomic_set(&mm->munmap_inprogress, 0);
 #endif
+/********/
 	up_write(&mm->mmap_sem);
 	return ret;
 }
@@ -3007,9 +3021,11 @@ static int do_brk(unsigned long addr, unsigned long request)
 	}
 
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	atomic_set(&vma->is_marked_lazy, 0);
 #endif
+/********/
 	vma->vm_mm = mm;
 	vma->vm_start = addr;
 	vma->vm_end = addr + len;
@@ -3191,9 +3207,11 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
 		if (vma_dup_policy(vma, new_vma))
 			goto out_free_vma;
 		INIT_LIST_HEAD(&new_vma->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 		atomic_set(&new_vma->is_marked_lazy, 0);
 #endif
+/********/
 		if (anon_vma_clone(new_vma, vma))
 			goto out_free_mempol;
 		if (new_vma->vm_file)
@@ -3332,9 +3350,11 @@ static struct vm_area_struct *__install_special_mapping(
 		return ERR_PTR(-ENOMEM);
 
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	atomic_set(&vma->is_marked_lazy, 0);
 #endif
+/********/
 	vma->vm_mm = mm;
 	vma->vm_start = addr;
 	vma->vm_end = addr + len;

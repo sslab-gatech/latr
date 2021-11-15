@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Simple NUMA memory policy for the Linux kernel.
  *
@@ -598,6 +599,7 @@ unlock:
  * an architecture makes a different choice, it will need further
  * changes to the core.
  */
+/* latr */
 unsigned long change_prot_numa(struct vm_area_struct *vma,
 			unsigned long addr, unsigned long end, int prot_numa)
 {
@@ -609,6 +611,7 @@ unsigned long change_prot_numa(struct vm_area_struct *vma,
 
 	return nr_updated;
 }
+/*******/
 #else
 static unsigned long change_prot_numa(struct vm_area_struct *vma,
 			unsigned long addr, unsigned long end)
@@ -647,7 +650,9 @@ static int queue_pages_test_walk(unsigned long start, unsigned long end,
 		if (!is_vm_hugetlb_page(vma) &&
 			(vma->vm_flags & (VM_READ | VM_EXEC | VM_WRITE)) &&
 			!(vma->vm_flags & VM_MIXEDMAP))
+/* latr */
 			change_prot_numa(vma, start, endvma, 1);
+/********/
 		return 1;
 	}
 

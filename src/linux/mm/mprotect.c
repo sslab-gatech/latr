@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *  mm/mprotect.c
  *
@@ -251,8 +252,10 @@ static unsigned long change_protection_range(struct vm_area_struct *vma,
 	} while (pgd++, addr = next, addr != end);
 
 	/* Only flush the TLB if we actually modified any entries: */
+/* latr */
 	if (pages && (prot_numa == 1))
 		flush_tlb_range(vma, start, end);
+/********/
 	clear_tlb_flush_pending(mm);
 
 	return pages;

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *  linux/mm/memory.c
  *
@@ -254,11 +255,13 @@ static void tlb_flush_mmu_tlbonly(struct mmu_gather *tlb)
 static void tlb_flush_mmu_free(struct mmu_gather *tlb)
 {
 	struct mmu_gather_batch *batch;
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	int ret=0;
 #endif
 
 	for (batch = &tlb->local; batch && batch->nr; batch = batch->next) {
+/* latr */
 #ifndef CONFIG_LAZY_MEM_FREE
 		free_pages_and_swap_cache(batch->pages, batch->nr);
 #else
@@ -272,6 +275,7 @@ static void tlb_flush_mmu_free(struct mmu_gather *tlb)
 		}
 #endif
                 batch->nr = 0;
+/*******/
 	}
 	tlb->active = &tlb->local;
 }
@@ -815,6 +819,7 @@ out:
 	return pfn_to_page(pfn);
 }
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 int update_lazy_list(struct mm_struct *mm, struct page **page, unsigned int nr)
 {
@@ -839,6 +844,7 @@ int update_lazy_list(struct mm_struct *mm, struct page **page, unsigned int nr)
 	return 1;
 }
 #endif
+/*******/
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 struct page *vm_normal_page_pmd(struct vm_area_struct *vma, unsigned long addr,

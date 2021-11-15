@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-only
+:qa
 /*
  *  kernel/sched/core.c
  *
@@ -3094,10 +3096,12 @@ void scheduler_tick(void)
 	rq->idle_balance = idle_cpu(cpu);
 	trigger_load_balance(rq);
 #endif
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	/* flush TLB entries during scheduler tick */
 	native_flush_saved_states(cpu, 1);
 #endif
+/*******/
 	rq_last_tick_reset(rq);
 }
 
@@ -3398,10 +3402,12 @@ static void __sched notrace __schedule(bool preempt)
 	clear_preempt_need_resched();
 	rq->clock_skip_update = 0;
 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	/* before context switch flush the saved TLB entries */
 	native_flush_saved_states(cpu, 0);
 #endif
+/*******/
 
 	if (likely(prev != next)) {
 		rq->nr_switches++;

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _LINUX_MM_H
 #define _LINUX_MM_H
 
@@ -281,6 +282,7 @@ extern pgprot_t protection_map[16];
 #define FAULT_FLAG_REMOTE	0x80	/* faulting for non current tsk/mm */
 #define FAULT_FLAG_INSTRUCTION  0x100	/* The fault was during an instruction fetch */
 
+/* latr */
 struct __tlbinfo {
         u32 min_time;
         u32 max_time;
@@ -299,6 +301,7 @@ struct tlbinfo {
 };
 
 DECLARE_PER_CPU(struct tlbinfo, tlbinfo);
+/*******/
 
 /*
  * vm_fault is filled by the the pagefault handler and passed to the vma's
@@ -2195,10 +2198,12 @@ static inline void vma_set_page_prot(struct vm_area_struct *vma)
 }
 #endif
 
+/* latr */
 #ifdef CONFIG_NUMA_BALANCING
 unsigned long change_prot_numa(struct vm_area_struct *vma,
 			unsigned long start, unsigned long end, int prot_numa);
 #endif
+/*******/
 
 struct vm_area_struct *find_extend_vma(struct mm_struct *, unsigned long addr);
 int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
@@ -2357,6 +2362,7 @@ void vmemmap_free(unsigned long start, unsigned long end);
 void register_page_bootmem_memmap(unsigned long section_nr, struct page *map,
 				  unsigned long size);
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 void lazy_remove_vma_list(struct mm_struct *mm,
 			struct vm_area_struct *vma);
@@ -2365,6 +2371,7 @@ void lazy_detach_vmas_to_be_unmapped(struct mm_struct *mm,
 void lazy_free_pages(struct mm_struct *mm,
 		struct lazy_page_list *lpages);
 #endif
+/*******/
 
 enum mf_flags {
 	MF_COUNT_INCREASED = 1 << 0,

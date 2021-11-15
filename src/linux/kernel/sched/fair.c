@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Completely Fair Scheduling (CFS) Class (SCHED_NORMAL/SCHED_BATCH)
  *
@@ -2423,9 +2424,11 @@ void task_numa_work(struct callback_head *work)
 	unsigned long start, end;
 	unsigned long nr_pte_updates = 0;
 	long pages, virtpages;
+/* latr */
 #ifdef CONFIG_LAZY_MIGRATION
 	struct flush_tlb_info info;
 #endif
+/*******/
 
 
 	SCHED_WARN_ON(p != container_of(work, struct task_struct, numa_work));
@@ -2476,6 +2479,7 @@ void task_numa_work(struct callback_head *work)
 	if (!pages)
 		return;
 
+
 	down_read(&mm->mmap_sem);
 	vma = find_vma(mm, start);
 	if (!vma) {
@@ -2510,7 +2514,7 @@ void task_numa_work(struct callback_head *work)
 			start = max(start, vma->vm_start);
 			end = ALIGN(start + (pages << PAGE_SHIFT), HPAGE_SIZE);
 			end = min(end, vma->vm_end);
-
+/* latr */
 #ifndef CONFIG_LAZY_MIGRATION
 			nr_pte_updates = change_prot_numa(vma, start, end, 1);
 #else
@@ -2529,6 +2533,7 @@ void task_numa_work(struct callback_head *work)
 								start, end, 1);
 			}
 #endif
+/*******/
 
 			/*
 			 * Try to scan sysctl_numa_balancing_size worth of

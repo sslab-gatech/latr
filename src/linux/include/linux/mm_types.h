@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _LINUX_MM_TYPES_H
 #define _LINUX_MM_TYPES_H
 
@@ -358,12 +359,14 @@ struct vm_area_struct {
 	struct mempolicy *vm_policy;	/* NUMA policy for the VMA */
 #endif
 	struct vm_userfaultfd_ctx vm_userfaultfd_ctx;
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	/* List to add the VMAs to the lazy list */
 	struct vm_area_struct *lazy_vmnext, *lazy_vmprev;
         u64 lazy_jiffy;
         atomic_t is_marked_lazy;
 #endif
+/*******/
 };
 
 struct core_thread {
@@ -398,7 +401,7 @@ struct mm_rss_stat {
 	atomic_long_t count[NR_MM_COUNTERS];
 };
 
-
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 struct lazy_page_list {
 	unsigned int nr;
@@ -415,6 +418,7 @@ struct lazy_mm_list {
 extern spinlock_t lazy_mm_lock;
 extern struct list_head lazy_mm_list;
 #endif
+/*******/
 
 struct kioctx_table;
 struct mm_struct {
@@ -538,6 +542,7 @@ struct mm_struct {
 #endif
 	struct work_struct async_put_work;
 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 	atomic_t munmap_inprogress;
 #endif
@@ -549,6 +554,7 @@ struct mm_struct {
 	struct list_head lazy_mm_list;
 	atomic_t in_lazy_list;
 #endif
+/*******/
 };
 
 static inline void mm_init_cpumask(struct mm_struct *mm)
@@ -648,8 +654,10 @@ typedef struct {
 	unsigned long val;
 } swp_entry_t;
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 int update_lazy_list(struct mm_struct *mm, struct page **page, unsigned int nr);
 #endif
+/*******/
 
 #endif /* _LINUX_MM_TYPES_H */

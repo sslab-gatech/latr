@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *  linux/kernel/fork.c
  *
@@ -611,10 +612,12 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
 			goto fail_nomem;
 		*tmp = *mpnt;
 		INIT_LIST_HEAD(&tmp->anon_vma_chain);
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 		atomic_set(&tmp->is_marked_lazy, 0);
 
 #endif
+/*******/
 		retval = vma_dup_policy(mpnt, tmp);
 		if (retval)
 			goto fail_nomem_policy;
@@ -777,12 +780,14 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 #if defined(CONFIG_TRANSPARENT_HUGEPAGE) && !USE_SPLIT_PMD_PTLOCKS
 	mm->pmd_huge_pte = NULL;
 #endif
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	mm->lazy_mmap = NULL;
 	atomic_set(&mm->in_lazy_list, 0);
 	INIT_LIST_HEAD(&mm->lazy_mm_list);
 	INIT_LIST_HEAD(&mm->lazy_page_list_head);
 #endif
+/*******/
 
 	if (current->mm) {
 		mm->flags = current->mm->flags & MMF_INIT_MASK;
@@ -880,6 +885,7 @@ static inline void __mmput(struct mm_struct *mm)
 		list_del(&mm->mmlist);
 		spin_unlock(&mmlist_lock);
 	}
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 	/* free the lazy VMAs and pages too */
 	if (atomic_read(&mm->in_lazy_list)) {
@@ -890,6 +896,7 @@ static inline void __mmput(struct mm_struct *mm)
 		atomic_set(&mm->in_lazy_list, 0);
 	}
 #endif
+/*******/
 	if (mm->binfmt)
 		module_put(mm->binfmt->module);
 	set_bit(MMF_OOM_SKIP, &mm->flags);

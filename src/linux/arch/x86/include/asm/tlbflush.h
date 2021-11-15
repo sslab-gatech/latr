@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _ASM_X86_TLBFLUSH_H
 #define _ASM_X86_TLBFLUSH_H
 
@@ -8,6 +9,7 @@
 #include <asm/cpufeature.h>
 #include <asm/special_insns.h>
 
+/* latr */
 #define get_min_time(t1, t2) do { \
         if (!(t1)) \
                 (t1) = (t2); \
@@ -27,6 +29,7 @@
         get_max_time((t)->max_time, (time)); \
         (t)->total_time += (time); \
 } while(0)
+/*******/
 
 static inline void __invpcid(unsigned long pcid, unsigned long addr,
 			     unsigned long type)
@@ -160,12 +163,16 @@ static inline void __native_flush_tlb(void)
 	 * task switch and therefore we must not be preempted while we write CR3
 	 * back:
 	 */
+/* latr */
         u64 time = rdtsc();
+/*******/
 	preempt_disable();
 	native_write_cr3(native_read_cr3());
+/* latr */
         this_cpu_inc(tlbinfo.global_tlbs.num_tlbs); 
         update_tlbinfo_stats(&this_cpu_ptr(&tlbinfo)->global_tlbs,
                              rdtsc() - time);
+/*******/
 	preempt_enable();
 }
 
@@ -183,7 +190,9 @@ static inline void __native_flush_tlb_global_irq_disabled(void)
 static inline void __native_flush_tlb_global(void)
 {
 	unsigned long flags;
+/* latr */
         u64 time;
+/*******/
 
 	if (static_cpu_has(X86_FEATURE_INVPCID)) {
 		/*
@@ -200,23 +209,29 @@ static inline void __native_flush_tlb_global(void)
 	 * be called from deep inside debugging code.)
 	 */
 	raw_local_irq_save(flags);
+/* latr */
         time = rdtsc();
+/*******/
 
 	__native_flush_tlb_global_irq_disabled();
 
+/* latr */
         this_cpu_inc(tlbinfo.global_tlbs.num_tlbs); 
         update_tlbinfo_stats(&this_cpu_ptr(&tlbinfo)->global_tlbs,
                              rdtsc() - time);
+/*******/
 	raw_local_irq_restore(flags);
 }
 
 static inline void __native_flush_tlb_single(unsigned long addr)
 {
+/* latr */
         /* u64 time = rdtsc(); */
         asm volatile("invlpg (%0)" ::"r" (addr) : "memory");
         /* this_cpu_inc(tlbinfo.inv_tlbs.num_tlbs);  */
         /* update_tlbinfo_stats(&this_cpu_ptr(&tlbinfo)->inv_tlbs, */
         /*                      rdtsc_ordered() - time); */
+/*******/
 }
 
 static inline void __flush_tlb_all(void)
@@ -346,7 +361,7 @@ extern void flush_tlb_kernel_range(unsigned long start, unsigned long end);
 
 void native_flush_tlb_others(const struct cpumask *cpumask,
 				struct mm_struct *mm,
-                                unsigned long start, unsigned long end);
+				unsigned long start, unsigned long end);
 
 #define TLBSTATE_OK	1
 #define TLBSTATE_LAZY	2
@@ -363,7 +378,8 @@ static inline void reset_lazy_tlbstate(void)
 #define flush_tlb_others(mask, mm, start, end)	\
 	native_flush_tlb_others(mask, mm, start, end)
 #endif
-
+ 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
 
 #define LAZY_TLB_NUM_ENTRIES 256
@@ -392,5 +408,6 @@ typedef struct shootdown_entries {
 extern shootdown_entries_t __percpu *lazy_tlb_entries;
 
 #endif
+/*******/
 
 #endif /* _ASM_X86_TLBFLUSH_H */

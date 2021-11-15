@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /* internal.h: mm/ internal definitions
  *
  * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
@@ -269,10 +270,12 @@ static inline bool is_data_mapping(vm_flags_t flags)
 void __vma_link_list(struct mm_struct *mm, struct vm_area_struct *vma,
 		struct vm_area_struct *prev, struct rb_node *rb_parent);
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 void __vma_add_lazy_list(struct mm_struct *mm, struct vm_area_struct *vma);
 void __vma_del_lazy_list(struct mm_struct *mm, struct vm_area_struct *vma);
 #endif
+/*******/
 
 #ifdef CONFIG_MMU
 extern long populate_vma_page_range(struct vm_area_struct *vma,

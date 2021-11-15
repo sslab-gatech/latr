@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -229,6 +230,7 @@ void __vma_link_list(struct mm_struct *mm, struct vm_area_struct *vma,
 		next->vm_prev = vma;
 }
 
+/* latr */
 #ifdef CONFIG_LAZY_MEM_FREE
 
 void __vma_add_lazy_list(struct mm_struct *mm,
@@ -268,6 +270,7 @@ void __vma_del_lazy_list(struct mm_struct *mm,
 }
 
 #endif
+/********/
 
 /* Check if the vma is being used as a stack by this task */
 int vma_is_stack_for_current(struct vm_area_struct *vma)

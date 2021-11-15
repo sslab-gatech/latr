@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *	linux/mm/madvise.c
  *
@@ -476,6 +477,7 @@ static long madvise_dontneed(struct vm_area_struct *vma,
 	if (vma->vm_flags & (VM_LOCKED|VM_HUGETLB|VM_PFNMAP))
 		return -EINVAL;
 
+/* latr */
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
     atomic_set(&vma->vm_mm->munmap_inprogress, 1);
 #endif
@@ -483,6 +485,7 @@ static long madvise_dontneed(struct vm_area_struct *vma,
 #ifdef CONFIG_LAZY_TLB_SHOOTDOWN
     atomic_set(&vma->vm_mm->munmap_inprogress, 0);
 #endif
+/*******/
 	return 0;
 }
 
